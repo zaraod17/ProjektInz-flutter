@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ImageInput extends StatefulWidget {
   // final Function onSelectImage;
@@ -9,6 +11,13 @@ class ImageInput extends StatefulWidget {
 }
 
 class _ImageInputState extends State<ImageInput> {
+  File _storedImage;
+
+  void takePicture() {
+    final picker = ImagePicker();
+    // TODO: zaimplementować metodę
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(

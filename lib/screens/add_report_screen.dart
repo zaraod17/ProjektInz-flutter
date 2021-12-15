@@ -101,7 +101,18 @@ class _AddReportScreenState extends State<AddReportScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                LocationInput()
+                LocationInput(),
+                SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Dodaj zgłoszenie'),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.green),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                )
               ],
             ),
           ),

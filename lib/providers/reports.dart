@@ -39,4 +39,6 @@ class Reports with ChangeNotifier {
   List<Report> get items {
     return [..._items];
   }
+
+  void addReport(Report reportData) {}
 }
