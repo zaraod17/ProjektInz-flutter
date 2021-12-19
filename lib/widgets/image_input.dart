@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart' as syspaths;
+import 'package:path/path.dart' as path;
 
 class ImageInput extends StatefulWidget {
   // final Function onSelectImage;
@@ -13,8 +15,22 @@ class ImageInput extends StatefulWidget {
 class _ImageInputState extends State<ImageInput> {
   File _storedImage;
 
-  void takePicture() {
+  Future<void> _takePicture() async {
     final picker = ImagePicker();
+    final imageFile =
+        await picker.pickImage(source: ImageSource.camera, maxWidth: 600);
+    if (imageFile == null) {
+      return;
+    }
+    setState(() {
+      _storedImage = File(imageFile.path);
+    });
+
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    final fileName = path.basename(imageFile.path);
+    final savedImage =
+        await File(imageFile.path).copy('${appDir.path}/${fileName}');
+
     // TODO: zaimplementować metodę
   }
 
@@ -27,10 +43,16 @@ class _ImageInputState extends State<ImageInput> {
           height: 100,
           decoration:
               BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-          child: Text(
-            'No image taken',
-            textAlign: TextAlign.center,
-          ),
+          child: _storedImage != null
+              ? Image.file(
+                  _storedImage,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                )
+              : Text(
+                  'No image taken',
+                  textAlign: TextAlign.center,
+                ),
           alignment: Alignment.center,
         ),
         SizedBox(
@@ -42,7 +64,7 @@ class _ImageInputState extends State<ImageInput> {
           label: Text('Take Picture'),
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.indigo)),
-          onPressed: () {},
+          onPressed: _takePicture,
         ))
       ],
     );

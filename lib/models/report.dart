@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 
 enum ReportStatus { Open, Closed, InProgress }
 
-class PlaceLoaction {
+class PlaceLocation {
   final double latitude;
   final double longitude;
   final String address;
 
-  PlaceLoaction(
+  const PlaceLocation(
       {@required this.latitude, @required this.longitude, this.address});
 }
 
@@ -17,7 +17,7 @@ class Report with ChangeNotifier {
   final String title;
   final String description;
   final String image;
-  final PlaceLoaction location;
+  final PlaceLocation location;
   final ReportStatus status;
 
   Report(

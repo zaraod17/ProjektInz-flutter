@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projekt/screens/add_report_screen.dart';
 
 import 'package:projekt/screens/reports_list_screen.dart';
 import 'package:projekt/screens/user_reports_screen.dart';
@@ -35,18 +36,27 @@ class _TabsScreenState extends State<TabsScreen> {
       appBar: AppBar(
         title: _pages[_selectedIndex]['title'],
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(AddReportScreen.routeName);
+              },
+              icon: Icon(Icons.add)),
           PopupMenuButton(itemBuilder: (ctx) {
             return [
               PopupMenuItem(
-                child: Text('Obserwowane'),
+                child: Text('Otwarte'),
                 value: 'watched',
               ),
               PopupMenuItem(
-                child: Text('Wszystkie'),
+                child: Text('Zamknięte'),
+                value: 'all',
+              ),
+              PopupMenuItem(
+                child: Text('W trakcie'),
                 value: 'all',
               )
             ];
-          })
+          }),
         ],
       ),
       body: _pages[_selectedIndex]['page'],

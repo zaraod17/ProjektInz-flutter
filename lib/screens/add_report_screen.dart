@@ -50,6 +50,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Tworzenie zgłoszenia'),
+          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
         ),
         body: Padding(
           padding: EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -105,14 +106,14 @@ class _AddReportScreenState extends State<AddReportScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text('Dodaj zgłoszenie'),
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                )
+                // ElevatedButton(
+                //   onPressed: () {},
+                //   child: Text('Dodaj zgłoszenie'),
+                //   style: ButtonStyle(
+                //       backgroundColor:
+                //           MaterialStateProperty.all<Color>(Colors.green),
+                //       tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                // )
               ],
             ),
           ),

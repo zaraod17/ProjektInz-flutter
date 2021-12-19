@@ -27,15 +27,15 @@ class UserReportsScreen extends StatelessWidget {
           ],
         ),
       ),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed(AddReportScreen.routeName);
-        },
-        child: Text('Dodaj zgłoszenie'),
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-      )
+      // ElevatedButton(
+      //   onPressed: () {
+      //     Navigator.of(context).pushNamed(AddReportScreen.routeName);
+      //   },
+      //   child: Text('Dodaj zgłoszenie'),
+      //   style: ButtonStyle(
+      //       backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+      //       tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+      // )
     ]);
   }
 }
