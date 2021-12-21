@@ -32,7 +32,8 @@ class ReportItem extends StatelessWidget {
       children: [
         ListTile(
           leading: CircleAvatar(
-            backgroundImage: NetworkImage(report.image),
+            backgroundImage:
+                report.image != null ? NetworkImage(report.image) : null,
           ),
           title: Text(report.title),
           subtitle: Text(report.location.address),

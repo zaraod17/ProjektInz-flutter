@@ -14,17 +14,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Report problem',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-        ),
-        initialRoute: '/',
-        routes: {
-          TabsScreen.routeName: (ctx) => ChangeNotifierProvider(
-              create: (context) => Reports(), child: TabsScreen()),
-          ReportDetailScreen.routeName: (ctx) => ReportDetailScreen(),
-          AddReportScreen.routeName: (ctx) => AddReportScreen(),
-        });
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => Reports())],
+      child: MaterialApp(
+          title: 'Report problem',
+          theme: ThemeData(
+            primarySwatch: Colors.purple,
+          ),
+          initialRoute: '/',
+          routes: {
+            TabsScreen.routeName: (ctx) => TabsScreen(),
+            ReportDetailScreen.routeName: (ctx) => ReportDetailScreen(),
+            AddReportScreen.routeName: (ctx) => AddReportScreen(),
+          }),
+    );
   }
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:provider/provider.dart';
 
+import 'package:projekt/providers/reports.dart';
+import 'package:projekt/models/report.dart';
 import '../widgets/location_input.dart';
 import '../widgets/image_input.dart';
 
@@ -11,10 +15,20 @@ class AddReportScreen extends StatefulWidget {
 
 class _AddReportScreenState extends State<AddReportScreen> {
   List<String> _categories = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-  String dropdownValue = 'Wybierz kategorię';
+  String dropdownValue = '';
   RelativeRect position;
+  PlaceLocation _pickedLocation;
+  File _selectedImage;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+  void _selectLocation(double lat, double lon) {
+    _pickedLocation = PlaceLocation(latitude: lat, longitude: lon);
+  }
+
+  void _selectImage(File selectedImage) {
+    _selectedImage = selectedImage;
+  }
 
   Widget _categorySelectorBuilder() {
     return Container(
@@ -45,12 +59,24 @@ class _AddReportScreenState extends State<AddReportScreen> {
     );
   }
 
+  Future<void> _saveReport() async {
+    if (_titleController.text.isEmpty ||
+        _descriptionController.text.isEmpty ||
+        dropdownValue.isEmpty) {
+      return;
+    }
+
+    await Provider.of<Reports>(context, listen: false).addReport(
+        _titleController.text, _descriptionController.text, _pickedLocation);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Tworzenie zgłoszenia'),
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
+          actions: [IconButton(onPressed: _saveReport, icon: Icon(Icons.add))],
         ),
         body: Padding(
           padding: EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -98,11 +124,11 @@ class _AddReportScreenState extends State<AddReportScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                ImageInput(),
+                ImageInput(_selectImage),
                 SizedBox(
                   height: 10,
                 ),
-                LocationInput(),
+                LocationInput(_selectLocation),
                 SizedBox(
                   height: 10,
                 ),
