@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:projekt/screens/report_detail_screen.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
 
 import '../models/report.dart';
 import '../screens/report_detail_screen.dart';
 
-class ReportItem extends StatelessWidget {
+class ReportItem extends StatefulWidget {
+  @override
+  State<ReportItem> createState() => _ReportItemState();
+}
+
+class _ReportItemState extends State<ReportItem> {
   ReportStatus statusReport;
 
-  Widget iconBuilder(ReportStatus status) {
+  Widget _iconBuilder(ReportStatus status) {
     switch (status) {
       case ReportStatus.Open:
         {
@@ -25,6 +31,11 @@ class ReportItem extends StatelessWidget {
     }
   }
 
+  MemoryImage _decodeImageString(imageString) {
+    final decodedBytes = base64Decode(imageString);
+    return MemoryImage(decodedBytes);
+  }
+
   @override
   Widget build(BuildContext context) {
     final report = Provider.of<Report>(context);
@@ -32,12 +43,13 @@ class ReportItem extends StatelessWidget {
       children: [
         ListTile(
           leading: CircleAvatar(
-            backgroundImage:
-                report.image != null ? NetworkImage(report.image) : null,
+            backgroundImage: report.image.isNotEmpty
+                ? _decodeImageString(report.image)
+                : null,
           ),
           title: Text(report.title),
           subtitle: Text(report.location.address),
-          trailing: iconBuilder(report.status),
+          trailing: _iconBuilder(report.status),
           onTap: () {
             Navigator.of(context)
                 .pushNamed(ReportDetailScreen.routeName, arguments: report);

@@ -6,7 +6,9 @@ import './screens/report_detail_screen.dart';
 import './providers/reports.dart';
 import './screens/tabs_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MyApp());
 }
 

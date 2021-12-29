@@ -18,7 +18,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   String dropdownValue = '';
   RelativeRect position;
   PlaceLocation _pickedLocation;
-  File _selectedImage;
+  String _selectedImage;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -26,7 +26,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
     _pickedLocation = PlaceLocation(latitude: lat, longitude: lon);
   }
 
-  void _selectImage(File selectedImage) {
+  void _selectImage(String selectedImage) {
     _selectedImage = selectedImage;
   }
 
@@ -67,82 +67,84 @@ class _AddReportScreenState extends State<AddReportScreen> {
     }
 
     await Provider.of<Reports>(context, listen: false).addReport(
-        _titleController.text, _descriptionController.text, _pickedLocation);
+        pickedTitle: _titleController.text,
+        pickedDescription: _descriptionController.text,
+        pickedLocation: _pickedLocation,
+        pickedImage: _selectedImage);
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Tworzenie zgłoszenia'),
-          actions: [IconButton(onPressed: _saveReport, icon: Icon(Icons.add))],
-        ),
-        body: Padding(
-          padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  // color: Colors.amber,
-                  child: Text(
-                    'Utwórz zgłoszenie',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                _categorySelectorBuilder(),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  height: 60,
-                  child: TextField(
-                    maxLength: 100,
-                    maxLines: 1,
-                    controller: _titleController,
-                    decoration: InputDecoration(
-                        label: Text('Tytuł'), border: OutlineInputBorder()),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  maxLength: 500,
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                      label: Text('Opis'), border: OutlineInputBorder()),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                ImageInput(_selectImage),
-                SizedBox(
-                  height: 10,
-                ),
-                LocationInput(_selectLocation),
-                SizedBox(
-                  height: 10,
-                ),
-                // ElevatedButton(
-                //   onPressed: () {},
-                //   child: Text('Dodaj zgłoszenie'),
-                //   style: ButtonStyle(
-                //       backgroundColor:
-                //           MaterialStateProperty.all<Color>(Colors.green),
-                //       tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                // )
-              ],
-            ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text('Tworzenie zgłoszenia'),
+            actions: [
+              IconButton(onPressed: _saveReport, icon: Icon(Icons.add))
+            ],
           ),
-        ));
+          body: Padding(
+            padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    height: 40,
+                    // color: Colors.amber,
+                    child: Text(
+                      'Utwórz zgłoszenie',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  _categorySelectorBuilder(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    height: 60,
+                    child: TextField(
+                      maxLength: 100,
+                      maxLines: 1,
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                          label: Text('Tytuł'), border: OutlineInputBorder()),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    maxLength: 500,
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                        label: Text('Opis'), border: OutlineInputBorder()),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ImageInput(_selectImage),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  LocationInput(_selectLocation),
+                  SizedBox(
+                    height: 10,
+                  ),
+                ],
+              ),
+            ),
+          )),
+    );
   }
 }

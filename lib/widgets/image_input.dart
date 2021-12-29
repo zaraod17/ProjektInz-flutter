@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -26,12 +28,16 @@ class _ImageInputState extends State<ImageInput> {
       _storedImage = File(imageFile.path);
     });
 
-    final appDir = await syspaths.getApplicationDocumentsDirectory();
-    final fileName = path.basename(imageFile.path);
-    final savedImage =
-        await File(imageFile.path).copy('${appDir.path}/${fileName}');
+    // final appDir = await syspaths.getApplicationDocumentsDirectory();
+    // final fileName = path.basename(imageFile.path);
+    // final savedImage =
+    //     await File(imageFile.path).copy('${appDir.path}/${fileName}');
 
-    widget.onSelectImage(savedImage);
+    final bytes = _storedImage.readAsBytesSync();
+
+    String img64 = base64Encode(bytes);
+
+    widget.onSelectImage(img64);
 
     // TODO: zaimplementować metodę
   }

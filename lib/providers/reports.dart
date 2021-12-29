@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:projekt/helpers/location_helper.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../models/report.dart';
 
@@ -11,8 +13,7 @@ class Reports with ChangeNotifier {
         category: null,
         title: 'Zniszczony przystanek',
         description: 'Na ulicy x jest zniszczony przystanek.',
-        image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN5cGrSHd6Z2NtYLBEyLxtgQsVm67AMLJkTA&usqp=CAU',
+        image: '',
         location: PlaceLocation(
             latitude: 37.422, longitude: -122.084, address: 'Wojska Polskiego'),
         status: ReportStatus.Open),
@@ -21,8 +22,7 @@ class Reports with ChangeNotifier {
         category: null,
         title: 'Zniszczony śmietnik',
         description: 'Na ulicy x jest zniszczony śmietnik.',
-        image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW7RFeHn_HUDCEz_Sj3knBSL28bO6gtjsisg&usqp=CAU',
+        image: '',
         location: PlaceLocation(
             latitude: 37.422, longitude: -122.084, address: 'Armi Krajowej'),
         status: ReportStatus.Closed),
@@ -31,7 +31,7 @@ class Reports with ChangeNotifier {
         category: null,
         title: 'Brak oświetlenia',
         description: 'Na ulicy x nie działa oświetlenie.',
-        image: 'http://inzynieria.com/uploaded/articles/crop_5/59766.jpg',
+        image: '',
         location: PlaceLocation(
             latitude: 37.422, longitude: -122.084, address: 'Szczecińska'),
         status: ReportStatus.Open),
@@ -41,8 +41,14 @@ class Reports with ChangeNotifier {
     return [..._items];
   }
 
-  Future<void> addReport(String pickedTitle, String pickedDescription,
-      PlaceLocation pickedLocation) async {
+  Future<void> addReport(
+      {String pickedTitle,
+      String pickedDescription,
+      PlaceLocation pickedLocation,
+      String pickedImage}) async {
+    final url = Uri.parse(
+        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json');
+
     final placeAddress = await LocationHelper.getPlaceAddress(
         pickedLocation.latitude, pickedLocation.longitude);
     final updatedLocation = PlaceLocation(
@@ -50,15 +56,35 @@ class Reports with ChangeNotifier {
         longitude: pickedLocation.longitude,
         address: placeAddress);
 
-    final newReport = Report(
-        id: DateTime.now().toString(),
-        title: pickedTitle,
-        image: null,
-        description: pickedDescription,
-        location: updatedLocation,
-        status: ReportStatus.Open);
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': pickedTitle,
+            'description': pickedDescription,
+            'image': pickedImage,
+            'location': {
+              'latitude': updatedLocation.latitude,
+              'longitude': updatedLocation.longitude,
+              'address': updatedLocation.address
+            },
+            'status': describeEnum(ReportStatus.Open)
+          }));
 
-    _items.add(newReport);
+      final newReport = Report(
+          id: json.decode(response.body)['name'],
+          title: pickedTitle,
+          image: pickedImage,
+          description: pickedDescription,
+          location: updatedLocation,
+          status: ReportStatus.Open);
+
+      _items.add(newReport);
+    } catch (error) {
+      print(error);
+    }
+
     notifyListeners();
   }
+
+  Future<void> fetchAndSetAllReports() {}
 }

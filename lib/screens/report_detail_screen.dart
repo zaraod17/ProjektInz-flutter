@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projekt/models/report.dart';
+import 'dart:convert';
 
 import '../helpers/location_helper.dart';
 
@@ -33,6 +34,12 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     super.didChangeDependencies();
   }
 
+  Image _decodeImageString(imageString) {
+    final decodedBytes = base64Decode(imageString);
+    return Image.memory(decodedBytes,
+        height: 250, width: double.infinity, fit: BoxFit.cover);
+  }
+
   @override
   Widget build(BuildContext context) {
     // final reportData = ModalRoute.of(context).settings.arguments as Report;
@@ -49,13 +56,8 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
-                  child: report.image != null
-                      ? Image.network(
-                          report.image,
-                          height: 250,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        )
+                  child: report.image.isNotEmpty
+                      ? _decodeImageString(report.image)
                       : null,
                 ),
                 SizedBox(height: 15),
@@ -79,16 +81,14 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     textAlign: TextAlign.center,
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                Container(
-                    width: double.infinity,
-                    height: 250,
+                ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
                     child: Image.network(
                       _previewImageUrl,
+                      height: 250,
+                      width: double.infinity,
                       fit: BoxFit.cover,
-                    ),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.all(Radius.circular(15)))),
+                    )),
                 SizedBox(height: 15),
                 Text('Uwagi',
                     textAlign: TextAlign.center,
