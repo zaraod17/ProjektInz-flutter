@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
+
 import 'package:provider/provider.dart';
 
 import 'package:projekt/providers/reports.dart';
@@ -21,6 +21,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   String _selectedImage;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  bool _validate = false;
 
   void _selectLocation(double lat, double lon) {
     _pickedLocation = PlaceLocation(latitude: lat, longitude: lon);
@@ -54,7 +55,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
             })
       ]),
       decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.grey),
+          border: Border.all(
+              width: 1, color: !_validate ? Colors.red : Colors.grey),
           borderRadius: BorderRadius.circular(10)),
     );
   }
@@ -65,12 +67,15 @@ class _AddReportScreenState extends State<AddReportScreen> {
         dropdownValue.isEmpty) {
       return;
     }
-
+    setState(() {
+      _validate = true;
+    });
     await Provider.of<Reports>(context, listen: false).addReport(
         pickedTitle: _titleController.text,
         pickedDescription: _descriptionController.text,
         pickedLocation: _pickedLocation,
-        pickedImage: _selectedImage);
+        pickedImage: _selectedImage,
+        pickedCategory: dropdownValue);
     Navigator.of(context).pop();
   }
 
@@ -106,6 +111,17 @@ class _AddReportScreenState extends State<AddReportScreen> {
                     height: 15,
                   ),
                   _categorySelectorBuilder(),
+                  !_validate
+                      ? Container(
+                          padding: EdgeInsets.only(top: 5, left: 8),
+                          height: 20,
+                          width: double.infinity,
+                          child: Text(
+                            'Wybierz kategorię zgłoszenia',
+                            style: TextStyle(color: Colors.red, fontSize: 12),
+                          ),
+                        )
+                      : null,
                   SizedBox(
                     height: 10,
                   ),
@@ -116,7 +132,10 @@ class _AddReportScreenState extends State<AddReportScreen> {
                       maxLines: 1,
                       controller: _titleController,
                       decoration: InputDecoration(
-                          label: Text('Tytuł'), border: OutlineInputBorder()),
+                          label: Text('Tytuł'),
+                          border: OutlineInputBorder(),
+                          errorText:
+                              _validate ? null : 'To pole nie może być puste'),
                     ),
                   ),
                   SizedBox(
@@ -128,7 +147,10 @@ class _AddReportScreenState extends State<AddReportScreen> {
                     maxLength: 500,
                     controller: _descriptionController,
                     decoration: InputDecoration(
-                        label: Text('Opis'), border: OutlineInputBorder()),
+                        label: Text('Opis'),
+                        border: OutlineInputBorder(),
+                        errorText:
+                            _validate ? null : 'To pole nie może być puste'),
                   ),
                   SizedBox(
                     height: 10,

@@ -45,7 +45,8 @@ class Reports with ChangeNotifier {
       {String pickedTitle,
       String pickedDescription,
       PlaceLocation pickedLocation,
-      String pickedImage}) async {
+      String pickedImage,
+      String pickedCategory}) async {
     final url = Uri.parse(
         'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json');
 
@@ -60,6 +61,7 @@ class Reports with ChangeNotifier {
       final response = await http.post(url,
           body: json.encode({
             'title': pickedTitle,
+            'category': pickedCategory,
             'description': pickedDescription,
             'image': pickedImage,
             'location': {
@@ -76,6 +78,7 @@ class Reports with ChangeNotifier {
           image: pickedImage,
           description: pickedDescription,
           location: updatedLocation,
+          category: pickedCategory,
           status: ReportStatus.Open);
 
       _items.add(newReport);
@@ -86,5 +89,35 @@ class Reports with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchAndSetAllReports() {}
+  Future<void> fetchAndSetAllReports() async {
+    var url = Uri.parse(
+        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json');
+
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+      final List<Report> loadedReports = [];
+
+      extractedData.forEach((prodId, report) {
+        loadedReports.add(Report(
+            id: prodId,
+            title: extractedData['title'],
+            description: extractedData['description'],
+            category: extractedData['category'],
+            image: extractedData['image'],
+            status: ReportStatus.values.firstWhere((element) =>
+                element.toString() == 'ReportStatus' + extractedData['status']),
+            location: PlaceLocation(
+                latitude: extractedData['location']['latitude'],
+                longitude: extractedData['location']['longitude'],
+                address: extractedData['location']['address'])));
+      });
+    } catch (error) {
+      print(error);
+      return;
+    }
+  }
 }

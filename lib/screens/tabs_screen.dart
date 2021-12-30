@@ -44,16 +44,20 @@ class _TabsScreenState extends State<TabsScreen> {
           PopupMenuButton(itemBuilder: (ctx) {
             return [
               PopupMenuItem(
+                child: Text('Wszystkie'),
+                value: 'all',
+              ),
+              PopupMenuItem(
                 child: Text('Otwarte'),
                 value: 'watched',
               ),
               PopupMenuItem(
                 child: Text('Zamknięte'),
-                value: 'all',
+                value: 'closed',
               ),
               PopupMenuItem(
                 child: Text('W trakcie'),
-                value: 'all',
+                value: 'inProgress',
               )
             ];
           }),

@@ -83,12 +83,19 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                 ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(15)),
-                    child: Image.network(
-                      _previewImageUrl,
-                      height: 250,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    )),
+                    child: _previewImageUrl != null
+                        ? Image.network(
+                            _previewImageUrl,
+                            height: 250,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Center(
+                              child: Text('Nie podano lokalizacji'),
+                            ),
+                          )),
                 SizedBox(height: 15),
                 Text('Uwagi',
                     textAlign: TextAlign.center,
