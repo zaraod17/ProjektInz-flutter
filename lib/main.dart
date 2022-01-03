@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:projekt/screens/add_report_screen.dart';
+import 'package:projekt/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
 
+import './screens/add_report_screen.dart';
+import './providers/auth.dart';
 import './screens/report_detail_screen.dart';
 import './providers/reports.dart';
 import './screens/tabs_screen.dart';
@@ -17,18 +19,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => Reports())],
-      child: MaterialApp(
-          title: 'Report problem',
-          theme: ThemeData(
-            primarySwatch: Colors.purple,
-          ),
-          initialRoute: '/',
-          routes: {
-            TabsScreen.routeName: (ctx) => TabsScreen(),
-            ReportDetailScreen.routeName: (ctx) => ReportDetailScreen(),
-            AddReportScreen.routeName: (ctx) => AddReportScreen(),
-          }),
+      providers: [
+        ChangeNotifierProvider(create: (context) => Auth()),
+        ChangeNotifierProxyProvider<Auth, Reports>(
+          update: (context, auth, previousReports) => Reports(
+              auth.token,
+              auth.userId,
+              previousReports == null ? [] : previousReports.items),
+        )
+      ],
+      child: Consumer<Auth>(
+        builder: (context, auth, _) => MaterialApp(
+            title: 'Report problem',
+            theme: ThemeData(
+              primarySwatch: Colors.purple,
+            ),
+            home: auth.isAuth ? TabsScreen() : AuthScreen(),
+            routes: {
+              AuthScreen.routeName: (ctx) => AuthScreen(),
+              TabsScreen.routeName: (ctx) => TabsScreen(),
+              ReportDetailScreen.routeName: (ctx) => ReportDetailScreen(),
+              AddReportScreen.routeName: (ctx) => AddReportScreen(),
+            }),
+      ),
     );
   }
 }

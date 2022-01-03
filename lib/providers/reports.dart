@@ -7,35 +7,11 @@ import 'dart:convert';
 import '../models/report.dart';
 
 class Reports with ChangeNotifier {
-  List<Report> _items = [
-    Report(
-        id: 'm1',
-        category: null,
-        title: 'Zniszczony przystanek',
-        description: 'Na ulicy x jest zniszczony przystanek.',
-        image: '',
-        location: PlaceLocation(
-            latitude: 37.422, longitude: -122.084, address: 'Wojska Polskiego'),
-        status: ReportStatus.Open),
-    Report(
-        id: 'm2',
-        category: null,
-        title: 'Zniszczony śmietnik',
-        description: 'Na ulicy x jest zniszczony śmietnik.',
-        image: '',
-        location: PlaceLocation(
-            latitude: 37.422, longitude: -122.084, address: 'Armi Krajowej'),
-        status: ReportStatus.Closed),
-    Report(
-        id: 'm3',
-        category: null,
-        title: 'Brak oświetlenia',
-        description: 'Na ulicy x nie działa oświetlenie.',
-        image: '',
-        location: PlaceLocation(
-            latitude: 37.422, longitude: -122.084, address: 'Szczecińska'),
-        status: ReportStatus.Open),
-  ];
+  List<Report> _items = [];
+  final String authToken;
+  final String userId;
+
+  Reports(this.authToken, this.userId, this._items);
 
   List<Report> get items {
     return [..._items];
@@ -100,21 +76,26 @@ class Reports with ChangeNotifier {
         return;
       }
       final List<Report> loadedReports = [];
+      // print(extractedData);
 
       extractedData.forEach((prodId, report) {
         loadedReports.add(Report(
             id: prodId,
-            title: extractedData['title'],
-            description: extractedData['description'],
-            category: extractedData['category'],
-            image: extractedData['image'],
-            status: ReportStatus.values.firstWhere((element) =>
-                element.toString() == 'ReportStatus' + extractedData['status']),
+            title: report['title'],
+            description: report['description'],
+            category: report['category'],
+            image: report['image'],
+            status: ReportStatus.Open,
             location: PlaceLocation(
-                latitude: extractedData['location']['latitude'],
-                longitude: extractedData['location']['longitude'],
-                address: extractedData['location']['address'])));
+                latitude: report['location']['latitude'],
+                longitude: report['location']['longitude'],
+                address: report['location']['address'])));
+
+        // print(report['image']);
       });
+      _items = loadedReports;
+
+      notifyListeners();
     } catch (error) {
       print(error);
       return;

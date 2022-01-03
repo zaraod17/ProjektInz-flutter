@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:projekt/providers/reports.dart';
 import 'package:projekt/screens/add_report_screen.dart';
 
 import 'package:projekt/screens/reports_list_screen.dart';
 import 'package:projekt/screens/user_reports_screen.dart';
+import 'package:provider/provider.dart';
 
 class TabsScreen extends StatefulWidget {
-  static const routeName = '/';
+  static const routeName = '/tabs';
   @override
   _TabsScreenState createState() => _TabsScreenState();
 }

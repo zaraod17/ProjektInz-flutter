@@ -67,9 +67,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
         dropdownValue.isEmpty) {
       return;
     }
-    setState(() {
-      _validate = true;
-    });
+
     await Provider.of<Reports>(context, listen: false).addReport(
         pickedTitle: _titleController.text,
         pickedDescription: _descriptionController.text,
@@ -121,7 +119,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
                             style: TextStyle(color: Colors.red, fontSize: 12),
                           ),
                         )
-                      : null,
+                      : Text('ok'),
                   SizedBox(
                     height: 10,
                   ),
