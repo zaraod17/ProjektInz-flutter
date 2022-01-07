@@ -34,6 +34,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final report = Provider.of<Reports>(context);
     return Scaffold(
       appBar: AppBar(
         title: _pages[_selectedIndex]['title'],
@@ -43,7 +44,11 @@ class _TabsScreenState extends State<TabsScreen> {
                 Navigator.of(context).pushNamed(AddReportScreen.routeName);
               },
               icon: Icon(Icons.add)),
-          PopupMenuButton(itemBuilder: (ctx) {
+          PopupMenuButton(onSelected: (value) {
+            setState(() {
+              return report.filterReports(value);
+            });
+          }, itemBuilder: (ctx) {
             return [
               PopupMenuItem(
                 child: Text('Wszystkie'),
@@ -51,7 +56,7 @@ class _TabsScreenState extends State<TabsScreen> {
               ),
               PopupMenuItem(
                 child: Text('Otwarte'),
-                value: 'watched',
+                value: 'open',
               ),
               PopupMenuItem(
                 child: Text('Zamknięte'),

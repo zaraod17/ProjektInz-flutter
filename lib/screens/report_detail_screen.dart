@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:projekt/models/report.dart';
+import 'package:projekt/providers/reports.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
 
 import '../helpers/location_helper.dart';
 
@@ -14,6 +16,7 @@ class ReportDetailScreen extends StatefulWidget {
 class _ReportDetailScreenState extends State<ReportDetailScreen> {
   String _previewImageUrl;
   Report report;
+  final _commentController = TextEditingController();
 
   void _showPreviewMap(double lat, double lon) {
     final staticMapImageUrl =
@@ -42,68 +45,123 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isSent = false;
     // final reportData = ModalRoute.of(context).settings.arguments as Report;
     // _showPreviewMap(
     //     reportData.location.latitude, reportData.location.longitude);
-    return Scaffold(
+    final reportsProvider = Provider.of<Reports>(context, listen: false);
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         appBar: AppBar(
           title: Text(report.title),
         ),
-        body: Padding(
-          padding: EdgeInsets.all(15),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                ClipRRect(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                child: report.image.isNotEmpty
+                    ? _decodeImageString(report.image)
+                    : null,
+              ),
+              SizedBox(height: 15),
+              Text(report.title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                  width: double.infinity,
+                  child: Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Text(report.description)),
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.grey),
+                  )),
+              SizedBox(height: 15),
+              Text('Lokalizacja',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+              ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
-                  child: report.image.isNotEmpty
-                      ? _decodeImageString(report.image)
-                      : null,
-                ),
-                SizedBox(height: 15),
-                Text(report.title,
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                SizedBox(
-                  height: 5,
-                ),
-                Container(
-                    width: double.infinity,
-                    child: Padding(
-                        padding: EdgeInsets.all(15),
-                        child: Text(report.description)),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.grey),
-                    )),
-                SizedBox(height: 15),
-                Text('Lokalizacja',
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    child: _previewImageUrl != null
-                        ? Image.network(
-                            _previewImageUrl,
-                            height: 250,
+                  child: _previewImageUrl != null
+                      ? Image.network(
+                          _previewImageUrl,
+                          height: 250,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Center(
+                            child: Text('Nie podano lokalizacji'),
+                          ),
+                        )),
+              SizedBox(height: 15),
+              reportsProvider.userId == report.creatorId
+                  ? Container(
+                      child: Column(
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.all(10),
                             width: double.infinity,
-                            fit: BoxFit.cover,
-                          )
-                        : Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Center(
-                              child: Text('Nie podano lokalizacji'),
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Colors.purple[600],
+                                border:
+                                    Border.all(width: 1, color: Colors.grey),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Text('Uwagi',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600)),
+                          ),
+                          TextField(
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            maxLength: 500,
+                            controller: _commentController,
+                            decoration: InputDecoration(
+                              label: Text('Uwagi dla admina'),
+                              border: OutlineInputBorder(),
                             ),
-                          )),
-                SizedBox(height: 15),
-                Text('Uwagi',
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-              ],
-            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              RaisedButton(
+                                color: Colors.green,
+                                onPressed: () {
+                                  setState(() {
+                                    _commentController.text = null;
+                                  });
+                                  reportsProvider.addComment(
+                                    report.id,
+                                    _commentController.text,
+                                  );
+                                },
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    width: 80,
+                                    child: Text('Dodaj')),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              )
+                            ],
+                          ),
+                          //  ListView.builder(itemBuilder: (ctx, i) {} , itemCount: report.comment. ,)
+                        ],
+                      ),
+                    )
+                  : null,
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

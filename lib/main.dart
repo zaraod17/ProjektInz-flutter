@@ -7,6 +7,7 @@ import './providers/auth.dart';
 import './screens/report_detail_screen.dart';
 import './providers/reports.dart';
 import './screens/tabs_screen.dart';
+import './screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,16 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primarySwatch: Colors.purple,
             ),
-            home: auth.isAuth ? TabsScreen() : AuthScreen(),
+            home: auth.isAuth
+                ? TabsScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SplashScreen()
+                            : AuthScreen(),
+                  ),
             routes: {
               AuthScreen.routeName: (ctx) => AuthScreen(),
               TabsScreen.routeName: (ctx) => TabsScreen(),

@@ -27,8 +27,12 @@ class ReportsOverviewScreen extends StatelessWidget {
                       builder: (context, reportsData, child) => Padding(
                         padding: EdgeInsets.all(8),
                         child: ListView.builder(
-                          itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
-                              value: reportsData.items[i], child: ReportItem()),
+                          itemBuilder: (ctx, i) => Column(children: [
+                            ChangeNotifierProvider.value(
+                                value: reportsData.items[i],
+                                child: ReportItem()),
+                            Divider()
+                          ]),
                           itemCount: reportsData.items.length,
                         ),
                       ),

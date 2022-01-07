@@ -8,6 +8,7 @@ import '../models/report.dart';
 
 class Reports with ChangeNotifier {
   List<Report> _items = [];
+  List<Report> _copyItems = [];
   final String authToken;
   final String userId;
 
@@ -24,7 +25,7 @@ class Reports with ChangeNotifier {
       String pickedImage,
       String pickedCategory}) async {
     final url = Uri.parse(
-        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json');
+        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken');
 
     final placeAddress = await LocationHelper.getPlaceAddress(
         pickedLocation.latitude, pickedLocation.longitude);
@@ -40,6 +41,7 @@ class Reports with ChangeNotifier {
             'category': pickedCategory,
             'description': pickedDescription,
             'image': pickedImage,
+            'creatorId': userId,
             'location': {
               'latitude': updatedLocation.latitude,
               'longitude': updatedLocation.longitude,
@@ -55,9 +57,11 @@ class Reports with ChangeNotifier {
           description: pickedDescription,
           location: updatedLocation,
           category: pickedCategory,
+          creatorId: userId,
           status: ReportStatus.Open);
 
       _items.add(newReport);
+      _copyItems.add(newReport);
     } catch (error) {
       print(error);
     }
@@ -65,12 +69,15 @@ class Reports with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchAndSetAllReports() async {
+  Future<void> fetchAndSetAllReports([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse(
-        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json');
+        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
 
     try {
       final response = await http.get(url);
+      // print(authToken);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
@@ -79,23 +86,83 @@ class Reports with ChangeNotifier {
       // print(extractedData);
 
       extractedData.forEach((prodId, report) {
+        final List<Comment> commentsList = [];
+
+        final commentsMap = report['comments'] as Map<String, dynamic>;
+
+        commentsMap.forEach((commentId, comment) {
+          commentsList.add(
+              Comment(comment: comment['content'], userId: comment['userId']));
+        });
+
+        print(DateTime.now().toString());
+
         loadedReports.add(Report(
             id: prodId,
             title: report['title'],
             description: report['description'],
             category: report['category'],
             image: report['image'],
-            status: ReportStatus.Open,
+            creatorId: report['creatorId'],
+            status: ReportStatus.values.firstWhere((status) =>
+                status.toString() == 'ReportStatus.' + report['status']),
+            comments: commentsList,
             location: PlaceLocation(
                 latitude: report['location']['latitude'],
                 longitude: report['location']['longitude'],
                 address: report['location']['address'])));
-
-        // print(report['image']);
       });
       _items = loadedReports;
+      _copyItems = loadedReports;
 
       notifyListeners();
+    } catch (error) {
+      print(error);
+      return;
+    }
+  }
+
+  List<Report> get copyOfReports {
+    return [..._copyItems];
+  }
+
+  void filterReports(String value) {
+    final reports = copyOfReports;
+    List<Report> filteredItems = [];
+    if (value == 'all') {
+      filteredItems = reports;
+    } else if (value == 'open') {
+      filteredItems = reports
+          .where((report) => report.status == ReportStatus.Open)
+          .toList();
+    } else if (value == 'closed') {
+      filteredItems = reports
+          .where((report) => report.status == ReportStatus.Closed)
+          .toList();
+    } else if (value == 'inProgress') {
+      filteredItems = reports
+          .where((report) => report.status == ReportStatus.InProgress)
+          .toList();
+    } else {
+      _items = reports;
+    }
+    _items = filteredItems;
+    notifyListeners();
+  }
+
+  void addComment(String reportId, String comment) async {
+    final url = Uri.parse(
+        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports/$reportId/comments.json?auth=$authToken');
+    try {
+      await http.post(url,
+          body: json.encode({'content': comment, 'userId': userId}));
+      final reportIndex1 = _items.indexWhere((report) => report.id == reportId);
+      final reportIndex2 =
+          _copyItems.indexWhere((report) => report.id == reportId);
+
+      _items[reportIndex1]
+          .comments
+          .add(Comment(comment: comment, userId: userId));
     } catch (error) {
       print(error);
       return;

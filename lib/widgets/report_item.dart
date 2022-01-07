@@ -49,14 +49,15 @@ class _ReportItemState extends State<ReportItem> {
                 : null,
           ),
           title: Text(report.title),
-          subtitle: Text(report.location.address),
+          subtitle: report.location.address != null
+              ? Text(report.location.address)
+              : null,
           trailing: _iconBuilder(report.status),
           onTap: () {
             Navigator.of(context)
                 .pushNamed(ReportDetailScreen.routeName, arguments: report);
           },
-        ),
-        Divider()
+        )
       ],
     );
   }
