@@ -1,14 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:projekt/screens/tabs_screen.dart';
-
+import '../models/http_exception.dart';
 import '../providers/auth.dart';
 import 'package:provider/provider.dart';
 
-import '../models/http_exception.dart';
-
-enum AuthMode { Signup, Login }
+enum AuthMode { Signup, Login, PasswordReset }
 
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -110,7 +107,6 @@ class _AuthCardState extends State<AuthCard> {
         // Log user in
         await Provider.of<Auth>(context, listen: false)
             .login(_authData['email'], _authData['password']);
-        // Navigator.of(context).pushNamed(TabsScreen.routeName);
       } else {
         // Sign user up
         await Provider.of<Auth>(context, listen: false)
@@ -131,7 +127,7 @@ class _AuthCardState extends State<AuthCard> {
       }
       _showErrorDialog(errorMeassage);
     } catch (error) {
-      const errorMessage = 'Could not authenticate you. Please try again later';
+      // const errorMessage = 'Could not authenticate you. Please try again later';
     }
 
     setState(() {
@@ -178,7 +174,7 @@ class _AuthCardState extends State<AuthCard> {
                       return 'Invalid email!';
                     }
                     return null;
-                    return null;
+                    //  return null;
                   },
                   onSaved: (value) {
                     _authData['email'] = value;
@@ -211,7 +207,14 @@ class _AuthCardState extends State<AuthCard> {
                         : null,
                   ),
                 SizedBox(
-                  height: 20,
+                  height: 5,
+                ),
+                Text(
+                  'Zapomniałeś hasła?',
+                  style: TextStyle(color: Colors.blue),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 if (_isLoading)
                   CircularProgressIndicator()

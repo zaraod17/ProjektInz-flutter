@@ -25,9 +25,9 @@ class _LocationInputState extends State<LocationInput> {
     }
   }
 
-  void _showPreviewMap(double lat, double lon) {
+  void _showPreviewMap(double lat, double lon) async {
     final staticMapImageUrl =
-        LocationHelper.generateLocationPreviewImage(lat, lon);
+        await LocationHelper.generateLocationPreviewImage(lat, lon);
 
     setState(() {
       _previewImageUrl = staticMapImageUrl;
@@ -63,7 +63,7 @@ class _LocationInputState extends State<LocationInput> {
           ),
           child: _previewImageUrl == null
               ? Text(
-                  'No Location Chosen',
+                  'Nie wybrano lokalizacji',
                   textAlign: TextAlign.center,
                 )
               : Image.network(
@@ -79,7 +79,7 @@ class _LocationInputState extends State<LocationInput> {
               icon: Icon(
                 Icons.location_on,
               ),
-              label: Text('Current Location'),
+              label: Text('Obecna lokalizacja'),
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.indigo)),
@@ -89,7 +89,7 @@ class _LocationInputState extends State<LocationInput> {
               icon: Icon(
                 Icons.map,
               ),
-              label: Text('Select on Map'),
+              label: Text('Wybierz na mapie'),
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.indigo)),

@@ -163,6 +163,9 @@ class Reports with ChangeNotifier {
       _items[reportIndex1]
           .comments
           .add(Comment(comment: comment, userId: userId));
+      _copyItems[reportIndex2]
+          .comments
+          .add(Comment(comment: comment, userId: userId));
     } catch (error) {
       print(error);
       return;

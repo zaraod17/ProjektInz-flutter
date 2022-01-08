@@ -14,14 +14,23 @@ class AddReportScreen extends StatefulWidget {
 }
 
 class _AddReportScreenState extends State<AddReportScreen> {
-  List<String> _categories = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-  String dropdownValue = '';
+  String dropdownValue;
   RelativeRect position;
   PlaceLocation _pickedLocation;
   String _selectedImage;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _validate = false;
+
+  List<DropdownMenuItem<String>> get dropdownItems {
+    List<DropdownMenuItem<String>> menuItems = [
+      DropdownMenuItem(child: Text("Szkody"), value: "Szkody"),
+      DropdownMenuItem(child: Text("Naprawy"), value: "Naprawy"),
+      DropdownMenuItem(child: Text("Wspólnota"), value: "Wspólnota"),
+      DropdownMenuItem(child: Text("Kanalizacja"), value: "Kanalizacja"),
+    ];
+    return menuItems;
+  }
 
   void _selectLocation(double lat, double lon) {
     _pickedLocation = PlaceLocation(latitude: lat, longitude: lon);
@@ -32,32 +41,39 @@ class _AddReportScreenState extends State<AddReportScreen> {
   }
 
   Widget _categorySelectorBuilder() {
-    return Container(
-      height: 40,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Expanded(
-            child: Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(dropdownValue),
-        )),
-        PopupMenuButton(
-            onSelected: (value) => {
-                  setState(() {
-                    dropdownValue = value;
-                  })
-                },
-            icon: Icon(Icons.arrow_drop_down),
-            itemBuilder: (ctx) {
-              return _categories
-                  .map((category) =>
-                      PopupMenuItem(value: category, child: Text(category)))
-                  .toList();
-            })
-      ]),
-      decoration: BoxDecoration(
-          border: Border.all(
-              width: 1, color: !_validate ? Colors.red : Colors.grey),
-          borderRadius: BorderRadius.circular(10)),
+    return DropdownButton<String>(
+      focusColor: Colors.white,
+      value: dropdownValue,
+      //elevation: 5,
+      style: TextStyle(color: Colors.white),
+      iconEnabledColor: Colors.black,
+      items: <String>[
+        'Kanalizacja',
+        'Komunikacja miejska',
+        'Przystanki',
+        'Zanieczyszczenia',
+        'Oświetlenie',
+        'Drogi',
+        'Roślinność'
+      ].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(
+            value,
+            style: TextStyle(color: Colors.black),
+          ),
+        );
+      }).toList(),
+      hint: Text(
+        "Proszę wybierać kategorię",
+        style: TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+      onChanged: (String value) {
+        setState(() {
+          dropdownValue = value;
+        });
+      },
     );
   }
 
@@ -85,7 +101,13 @@ class _AddReportScreenState extends State<AddReportScreen> {
           appBar: AppBar(
             title: Text('Tworzenie zgłoszenia'),
             actions: [
-              IconButton(onPressed: _saveReport, icon: Icon(Icons.add))
+              IconButton(
+                  onPressed: () {
+                    _saveReport();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Dodano zgłoszenie.')));
+                  },
+                  icon: Icon(Icons.add))
             ],
           ),
           body: Padding(

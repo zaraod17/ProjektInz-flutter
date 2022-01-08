@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projekt/models/report.dart';
 import 'package:projekt/providers/reports.dart';
+import 'package:projekt/widgets/comment_item.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 
@@ -18,9 +19,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   Report report;
   final _commentController = TextEditingController();
 
-  void _showPreviewMap(double lat, double lon) {
+  void _showPreviewMap(double lat, double lon) async {
     final staticMapImageUrl =
-        LocationHelper.generateLocationPreviewImage(lat, lon);
+        await LocationHelper.generateLocationPreviewImage(lat, lon);
 
     setState(() {
       _previewImageUrl = staticMapImageUrl;
@@ -45,7 +46,6 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isSent = false;
     // final reportData = ModalRoute.of(context).settings.arguments as Report;
     // _showPreviewMap(
     //     reportData.location.latitude, reportData.location.longitude);
@@ -59,8 +59,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
+              Container(
                 child: report.image.isNotEmpty
                     ? _decodeImageString(report.image)
                     : null,
@@ -119,6 +118,25 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
                           ),
+                          Consumer<Reports>(
+                            builder: (ctx, reports, ch) => Container(
+                              margin: EdgeInsets.symmetric(horizontal: 10),
+                              width: double.infinity,
+                              height: 300,
+                              child: ListView.builder(
+                                itemBuilder: (ctx, i) => Column(
+                                  children: [
+                                    CommentItem(report.comments[i].comment,
+                                        report.creatorId),
+                                    SizedBox(
+                                      height: 5,
+                                    )
+                                  ],
+                                ),
+                                itemCount: report.comments.reversed.length,
+                              ),
+                            ),
+                          ),
                           TextField(
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
@@ -135,13 +153,17 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                               RaisedButton(
                                 color: Colors.green,
                                 onPressed: () {
-                                  setState(() {
-                                    _commentController.text = null;
-                                  });
                                   reportsProvider.addComment(
                                     report.id,
                                     _commentController.text,
                                   );
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('Wysłano wiadomość')));
+                                  setState(() {
+                                    _commentController.text = '';
+                                  });
                                 },
                                 child: Container(
                                     alignment: Alignment.center,
@@ -153,7 +175,6 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                               )
                             ],
                           ),
-                          //  ListView.builder(itemBuilder: (ctx, i) {} , itemCount: report.comment. ,)
                         ],
                       ),
                     )

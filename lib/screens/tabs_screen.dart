@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:projekt/providers/auth.dart';
 import 'package:projekt/providers/reports.dart';
 import 'package:projekt/screens/add_report_screen.dart';
+import 'package:projekt/screens/auth_screen.dart';
 
 import 'package:projekt/screens/reports_list_screen.dart';
 import 'package:projekt/screens/user_reports_screen.dart';
@@ -37,6 +39,13 @@ class _TabsScreenState extends State<TabsScreen> {
     final report = Provider.of<Reports>(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: () {
+            Navigator.of(context).pushNamed(AuthScreen.routeName);
+            Provider.of<Auth>(context, listen: false).logout();
+          },
+        ),
         title: _pages[_selectedIndex]['title'],
         actions: [
           IconButton(
