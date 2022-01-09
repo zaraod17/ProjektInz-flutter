@@ -25,9 +25,9 @@ class _LocationInputState extends State<LocationInput> {
     }
   }
 
-  void _showPreviewMap(double lat, double lon) async {
+  void _showPreviewMap(double lat, double lon) {
     final staticMapImageUrl =
-        await LocationHelper.generateLocationPreviewImage(lat, lon);
+        LocationHelper.generateLocationPreviewImage(lat, lon);
 
     setState(() {
       _previewImageUrl = staticMapImageUrl;

@@ -166,6 +166,7 @@ class Reports with ChangeNotifier {
       _copyItems[reportIndex2]
           .comments
           .add(Comment(comment: comment, userId: userId));
+      // notifyListeners();
     } catch (error) {
       print(error);
       return;

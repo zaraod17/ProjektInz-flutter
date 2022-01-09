@@ -107,6 +107,9 @@ class _AuthCardState extends State<AuthCard> {
         // Log user in
         await Provider.of<Auth>(context, listen: false)
             .login(_authData['email'], _authData['password']);
+      } else if (_authMode == AuthMode.PasswordReset) {
+        await Provider.of<Auth>(context, listen: false)
+            .resetPassword(_authData['email']);
       } else {
         // Sign user up
         await Provider.of<Auth>(context, listen: false)
@@ -140,6 +143,10 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.Signup;
       });
+    } else if (_authData == AuthMode.PasswordReset) {
+      setState(() {
+        _authMode = AuthMode.Login;
+      });
     } else {
       setState(() {
         _authMode = AuthMode.Login;
@@ -156,9 +163,9 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 320 : 260,
+        height: _authMode == AuthMode.Signup ? 320 : 300,
         constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 300),
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -166,6 +173,12 @@ class _AuthCardState extends State<AuthCard> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
+                if (_authMode == AuthMode.PasswordReset)
+                  Text(
+                      'Na podany adres email zostanie wysłana wiadomość z linkiem resetującym hasło.'),
+                SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
@@ -180,19 +193,20 @@ class _AuthCardState extends State<AuthCard> {
                     _authData['email'] = value;
                   },
                 ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value.isEmpty || value.length < 5) {
-                      return 'Password is too short!';
-                    }
-                  },
-                  onSaved: (value) {
-                    _authData['password'] = value;
-                  },
-                ),
+                if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value.isEmpty || value.length < 5) {
+                        return 'Password is too short!';
+                      }
+                    },
+                    onSaved: (value) {
+                      _authData['password'] = value;
+                    },
+                  ),
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
                     enabled: _authMode == AuthMode.Signup,
@@ -209,15 +223,38 @@ class _AuthCardState extends State<AuthCard> {
                 SizedBox(
                   height: 5,
                 ),
-                Text(
-                  'Zapomniałeś hasła?',
-                  style: TextStyle(color: Colors.blue),
-                ),
+                if (_authMode == AuthMode.Login)
+                  GestureDetector(
+                    onTap: () => setState(() {
+                      _authMode = AuthMode.PasswordReset;
+                    }),
+                    child: Text(
+                      'Zapomniałeś hasła?',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
                 SizedBox(
                   height: 10,
                 ),
                 if (_isLoading)
                   CircularProgressIndicator()
+                else if (_authMode == AuthMode.PasswordReset)
+                  RaisedButton(
+                    child: Text('Wyślij'),
+                    onPressed: () {
+                      _submit();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content:
+                              Text('Wysłano email z linkiem resetującym')));
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+                    color: Theme.of(context).primaryColor,
+                    textColor: Theme.of(context).primaryTextTheme.button.color,
+                  )
                 else
                   RaisedButton(
                     child:
@@ -232,8 +269,10 @@ class _AuthCardState extends State<AuthCard> {
                     textColor: Theme.of(context).primaryTextTheme.button.color,
                   ),
                 FlatButton(
-                  child: Text(
-                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                  child: _authMode == AuthMode.PasswordReset
+                      ? Text('Wróć')
+                      : Text(
+                          '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
                   onPressed: _switchAuthMode,
                   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
