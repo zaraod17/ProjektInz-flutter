@@ -49,6 +49,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     // final reportData = ModalRoute.of(context).settings.arguments as Report;
     // _showPreviewMap(
     //     reportData.location.latitude, reportData.location.longitude);
+
     final reportsProvider = Provider.of<Reports>(context, listen: false);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -123,18 +124,22 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                               margin: EdgeInsets.symmetric(horizontal: 10),
                               width: double.infinity,
                               height: 300,
-                              child: ListView.builder(
-                                itemBuilder: (ctx, i) => Column(
-                                  children: [
-                                    CommentItem(report.comments[i].comment,
-                                        report.creatorId),
-                                    SizedBox(
-                                      height: 5,
+                              child: report.comments != null
+                                  ? ListView.builder(
+                                      itemBuilder: (ctx, i) => Column(
+                                        children: [
+                                          CommentItem(
+                                              report.comments[i].comment,
+                                              report.creatorId),
+                                          SizedBox(
+                                            height: 5,
+                                          )
+                                        ],
+                                      ),
+                                      itemCount:
+                                          report.comments.reversed.length,
                                     )
-                                  ],
-                                ),
-                                itemCount: report.comments.reversed.length,
-                              ),
+                                  : Text('Nie dodano uwag'),
                             ),
                           ),
                           TextField(

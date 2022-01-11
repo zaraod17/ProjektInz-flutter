@@ -61,9 +61,9 @@ class Reports with ChangeNotifier {
           status: ReportStatus.Open);
 
       _items.add(newReport);
-      _copyItems.add(newReport);
+      // _copyItems.add(newReport);
     } catch (error) {
-      print(error);
+      throw error;
     }
 
     notifyListeners();
@@ -88,12 +88,14 @@ class Reports with ChangeNotifier {
       extractedData.forEach((prodId, report) {
         final List<Comment> commentsList = [];
 
-        final commentsMap = report['comments'] as Map<String, dynamic>;
+        var commentsMap = report['comments'] as Map<String, dynamic>;
 
-        commentsMap.forEach((commentId, comment) {
-          commentsList.add(
-              Comment(comment: comment['content'], userId: comment['userId']));
-        });
+        commentsMap != null
+            ? commentsMap.forEach((commentId, comment) {
+                commentsList.add(Comment(
+                    comment: comment['content'], userId: comment['userId']));
+              })
+            : null;
 
         print(DateTime.now().toString());
 
@@ -156,17 +158,25 @@ class Reports with ChangeNotifier {
     try {
       await http.post(url,
           body: json.encode({'content': comment, 'userId': userId}));
-      final reportIndex1 = _items.indexWhere((report) => report.id == reportId);
-      final reportIndex2 =
-          _copyItems.indexWhere((report) => report.id == reportId);
+      // final reportIndex1 = _items.indexWhere((report) => report.id == reportId);
+      // final reportIndex2 =
+      //     _copyItems.indexWhere((report) => report.id == reportId);
 
-      _items[reportIndex1]
+      // _items
+      //     .elementAt(reportIndex1)
+      //     .comments
+      //     .add(Comment(comment: comment, userId: userId));
+
+      _items[_items.indexWhere((report) => report.id == reportId)]
           .comments
           .add(Comment(comment: comment, userId: userId));
-      _copyItems[reportIndex2]
-          .comments
-          .add(Comment(comment: comment, userId: userId));
+
+      // print(_items.elementAt(reportIndex1).comments.first.comment);
+      // _copyItems[reportIndex2]
+      //     .comments
+      //     .add(Comment(comment: comment, userId: userId));
       // notifyListeners();
+      notifyListeners();
     } catch (error) {
       print(error);
       return;

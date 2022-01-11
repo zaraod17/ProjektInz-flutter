@@ -82,15 +82,16 @@ class _AddReportScreenState extends State<AddReportScreen> {
         _descriptionController.text.isEmpty ||
         dropdownValue.isEmpty) {
       return;
-    }
-
-    await Provider.of<Reports>(context, listen: false).addReport(
-        pickedTitle: _titleController.text,
-        pickedDescription: _descriptionController.text,
-        pickedLocation: _pickedLocation,
-        pickedImage: _selectedImage,
-        pickedCategory: dropdownValue);
+    } else
+      await Provider.of<Reports>(context, listen: false).addReport(
+          pickedTitle: _titleController.text,
+          pickedDescription: _descriptionController.text,
+          pickedLocation: _pickedLocation,
+          pickedImage: _selectedImage,
+          pickedCategory: dropdownValue);
     Navigator.of(context).pop();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Dodano zgłoszenie.')));
   }
 
   @override
@@ -102,10 +103,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
             title: Text('Tworzenie zgłoszenia'),
             actions: [
               IconButton(
-                  onPressed: () {
-                    _saveReport();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Dodano zgłoszenie.')));
+                  onPressed: () async {
+                    await _saveReport();
                   },
                   icon: Icon(Icons.add))
             ],
