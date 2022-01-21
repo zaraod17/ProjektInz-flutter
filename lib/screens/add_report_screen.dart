@@ -22,16 +22,6 @@ class _AddReportScreenState extends State<AddReportScreen> {
   final _descriptionController = TextEditingController();
   bool _validate = false;
 
-  List<DropdownMenuItem<String>> get dropdownItems {
-    List<DropdownMenuItem<String>> menuItems = [
-      DropdownMenuItem(child: Text("Szkody"), value: "Szkody"),
-      DropdownMenuItem(child: Text("Naprawy"), value: "Naprawy"),
-      DropdownMenuItem(child: Text("Wspólnota"), value: "Wspólnota"),
-      DropdownMenuItem(child: Text("Kanalizacja"), value: "Kanalizacja"),
-    ];
-    return menuItems;
-  }
-
   void _selectLocation(double lat, double lon) {
     _pickedLocation = PlaceLocation(latitude: lat, longitude: lon);
   }
@@ -41,39 +31,45 @@ class _AddReportScreenState extends State<AddReportScreen> {
   }
 
   Widget _categorySelectorBuilder() {
-    return DropdownButton<String>(
-      focusColor: Colors.white,
-      value: dropdownValue,
-      //elevation: 5,
-      style: TextStyle(color: Colors.white),
-      iconEnabledColor: Colors.black,
-      items: <String>[
-        'Kanalizacja',
-        'Komunikacja miejska',
-        'Przystanki',
-        'Zanieczyszczenia',
-        'Oświetlenie',
-        'Drogi',
-        'Roślinność'
-      ].map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: TextStyle(color: Colors.black),
-          ),
-        );
-      }).toList(),
-      hint: Text(
-        "Proszę wybierać kategorię",
-        style: TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(8)),
+      child: DropdownButton<String>(
+        alignment: Alignment.center,
+        focusColor: Colors.white,
+        value: dropdownValue,
+        //elevation: 5,
+        style: TextStyle(color: Colors.white),
+        iconEnabledColor: Colors.black,
+        items: <String>[
+          'Kanalizacja',
+          'Komunikacja miejska',
+          'Przystanki',
+          'Zanieczyszczenia',
+          'Oświetlenie',
+          'Drogi',
+          'Roślinność'
+        ].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: TextStyle(color: Colors.black),
+            ),
+          );
+        }).toList(),
+        hint: Text(
+          "Wybierz kategorię",
+          style: TextStyle(
+              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        onChanged: (String value) {
+          setState(() {
+            dropdownValue = value;
+          });
+        },
       ),
-      onChanged: (String value) {
-        setState(() {
-          dropdownValue = value;
-        });
-      },
     );
   }
 

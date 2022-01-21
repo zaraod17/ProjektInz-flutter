@@ -49,17 +49,21 @@ class _ImageInputState extends State<ImageInput> {
         Container(
           width: 100,
           height: 100,
-          decoration:
-              BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+          decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.grey),
+              borderRadius: BorderRadius.circular(8)),
           child: _storedImage != null
               ? Image.file(
                   _storedImage,
                   fit: BoxFit.cover,
                   width: double.infinity,
                 )
-              : Text(
-                  'No image taken',
-                  textAlign: TextAlign.center,
+              : Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    'Nie dodano zdjęcia',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
           alignment: Alignment.center,
         ),

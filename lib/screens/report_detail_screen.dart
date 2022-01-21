@@ -63,7 +63,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
               Container(
                 child: report.image.isNotEmpty
                     ? _decodeImageString(report.image)
-                    : null,
+                    : Text('Nie znaleziono zdjęcia'),
               ),
               SizedBox(height: 15),
               Text(report.title,
@@ -100,26 +100,25 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                           ),
                         )),
               SizedBox(height: 15),
-              reportsProvider.userId == report.creatorId
-                  ? Container(
-                      child: Column(
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            margin: EdgeInsets.all(10),
-                            width: double.infinity,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.purple[600],
-                                border:
-                                    Border.all(width: 1, color: Colors.grey),
-                                borderRadius: BorderRadius.circular(15)),
-                            child: Text('Uwagi',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                          ),
-                          Consumer<Reports>(
+              Container(
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.all(10),
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Colors.purple[600],
+                          border: Border.all(width: 1, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Text('Uwagi',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w600)),
+                    ),
+                    reportsProvider.userId == report.creatorId
+                        ? Consumer<Reports>(
                             builder: (ctx, reports, ch) => Container(
                               margin: EdgeInsets.symmetric(horizontal: 10),
                               width: double.infinity,
@@ -141,49 +140,53 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                                     )
                                   : Text('Nie dodano uwag'),
                             ),
-                          ),
-                          TextField(
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            maxLength: 500,
-                            controller: _commentController,
-                            decoration: InputDecoration(
-                              label: Text('Uwagi dla admina'),
-                              border: OutlineInputBorder(),
+                          )
+                        : Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Center(
+                              child: Text('Nie znaleziono uwag'),
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              RaisedButton(
-                                color: Colors.green,
-                                onPressed: () {
-                                  reportsProvider.addComment(
-                                    report.id,
-                                    _commentController.text,
-                                  );
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text('Wysłano wiadomość')));
-                                  setState(() {
-                                    _commentController.text = '';
-                                  });
-                                },
-                                child: Container(
-                                    alignment: Alignment.center,
-                                    width: 80,
-                                    child: Text('Dodaj')),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              )
-                            ],
-                          ),
-                        ],
+                    TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      maxLength: 500,
+                      controller: _commentController,
+                      decoration: InputDecoration(
+                        label: Text('Uwagi dla admina'),
+                        border: OutlineInputBorder(),
                       ),
-                    )
-                  : null,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        RaisedButton(
+                          color: Colors.green,
+                          onPressed: () {
+                            reportsProvider.addComment(
+                              report.id,
+                              _commentController.text,
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Wysłano wiadomość')));
+                            setState(() {
+                              _commentController.text = '';
+                            });
+                          },
+                          child: Container(
+                              alignment: Alignment.center,
+                              width: 80,
+                              child: Text('Dodaj')),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),

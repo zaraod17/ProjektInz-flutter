@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:projekt/providers/reports.dart';
-import 'package:projekt/widgets/report_item.dart';
+import '../providers/reports.dart';
+import '../widgets/report_item.dart';
 
 class ReportsOverviewScreen extends StatelessWidget {
   static const routeName = '/reports-overview';
@@ -14,7 +14,7 @@ class ReportsOverviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //  final reportsData = Provider.of<Reports>(context);
-    // final reports = reportsData.items;
+    //  final reports = reportsData.items;
     return FutureBuilder(
         future: _refreshReports(context),
         builder: (context, snapshot) =>

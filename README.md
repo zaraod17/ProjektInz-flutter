@@ -2,6 +2,14 @@
 
 A new Flutter project.
 
+- Download code
+
+- Run command flutter install
+
+- Run command flutter run
+
+- Enjoy :)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

@@ -97,8 +97,6 @@ class Reports with ChangeNotifier {
               })
             : null;
 
-        print(DateTime.now().toString());
-
         loadedReports.add(Report(
             id: prodId,
             title: report['title'],

@@ -59,8 +59,8 @@ class _LocationInputState extends State<LocationInput> {
           width: double.infinity,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            border: Border.all(width: 1, color: Colors.grey),
-          ),
+              border: Border.all(width: 1, color: Colors.grey),
+              borderRadius: BorderRadius.circular(8)),
           child: _previewImageUrl == null
               ? Text(
                   'Nie wybrano lokalizacji',
