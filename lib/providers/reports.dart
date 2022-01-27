@@ -70,8 +70,10 @@ class Reports with ChangeNotifier {
   }
 
   Future<void> fetchAndSetAllReports([bool filterByUser = false]) async {
-    final filterString =
-        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    final limit = 'limitToFirst=5';
+    final filterString = filterByUser
+        ? 'orderBy="creatorId"&&equalTo="$userId"'
+        : 'orderBy="status"&$limit';
     var url = Uri.parse(
         'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
 

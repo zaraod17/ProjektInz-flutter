@@ -4,7 +4,7 @@ A new Flutter project.
 
 - Download code
 
-- Run command flutter install
+- Run command flutter packages get
 
 - Run command flutter run
 

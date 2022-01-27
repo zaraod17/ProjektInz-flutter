@@ -43,11 +43,9 @@ class _ReportItemState extends State<ReportItem> {
     return Column(
       children: [
         ListTile(
-          leading: CircleAvatar(
-            backgroundImage: report.image.isNotEmpty
-                ? _decodeImageString(report.image)
-                : null,
-          ),
+          leading: report.image != null
+              ? CircleAvatar(backgroundImage: _decodeImageString(report.image))
+              : null,
           title: Text(report.title),
           subtitle: report.location.address != null
               ? Text(report.location.address)

@@ -76,7 +76,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
   Future<void> _saveReport() async {
     if (_titleController.text.isEmpty ||
         _descriptionController.text.isEmpty ||
-        dropdownValue.isEmpty) {
+        dropdownValue.isEmpty ||
+        _pickedLocation == null) {
       return;
     } else
       await Provider.of<Reports>(context, listen: false).addReport(
