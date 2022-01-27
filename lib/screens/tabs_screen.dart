@@ -42,7 +42,7 @@ class _TabsScreenState extends State<TabsScreen> {
         leading: IconButton(
           icon: Icon(Icons.logout),
           onPressed: () {
-            Navigator.of(context).pushNamed(AuthScreen.routeName);
+            //  Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
             Provider.of<Auth>(context, listen: false).logout();
           },
         ),

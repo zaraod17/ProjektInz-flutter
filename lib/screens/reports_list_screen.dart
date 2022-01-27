@@ -13,8 +13,6 @@ class ReportsOverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //  final reportsData = Provider.of<Reports>(context);
-    //  final reports = reportsData.items;
     return FutureBuilder(
         future: _refreshReports(context),
         builder: (context, snapshot) =>
