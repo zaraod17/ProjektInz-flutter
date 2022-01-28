@@ -11,11 +11,17 @@ class Reports with ChangeNotifier {
   List<Report> _copyItems = [];
   final String authToken;
   final String userId;
+  int limitNumber = 8;
+  int startNumer = 9;
 
   Reports(this.authToken, this.userId, this._items);
 
   List<Report> get items {
     return [..._items];
+  }
+
+  List<Report> get copyOfReports {
+    return [..._copyItems];
   }
 
   Future<void> addReport(
@@ -70,10 +76,64 @@ class Reports with ChangeNotifier {
   }
 
   Future<void> fetchAndSetAllReports([bool filterByUser = false]) async {
-    final limit = 'limitToFirst=5';
+    var number = 8;
+    final limit = 'limitToFirst=$number';
     final filterString = filterByUser
-        ? 'orderBy="creatorId"&&equalTo="$userId"'
+        ? 'orderBy="creatorId"&equalTo="$userId"'
         : 'orderBy="status"&$limit';
+    var url = Uri.parse(
+        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
+
+    try {
+      final response = await http.get(url);
+
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+      final List<Report> loadedReports = [];
+
+      extractedData.forEach((prodId, report) {
+        final List<Comment> commentsList = [];
+
+        var commentsMap = report['comments'] as Map<String, dynamic>;
+
+        commentsMap != null
+            ? commentsMap.forEach((commentId, comment) {
+                commentsList.add(Comment(
+                    comment: comment['content'], userId: comment['userId']));
+              })
+            : null;
+
+        loadedReports.add(Report(
+            id: prodId,
+            title: report['title'],
+            description: report['description'],
+            category: report['category'],
+            image: report['image'],
+            creatorId: report['creatorId'],
+            status: ReportStatus.values.firstWhere((status) =>
+                status.toString() == 'ReportStatus.' + report['status']),
+            comments: commentsList,
+            location: PlaceLocation(
+                latitude: report['location']['latitude'],
+                longitude: report['location']['longitude'],
+                address: report['location']['address'])));
+      });
+      _items = loadedReports;
+      _copyItems = loadedReports;
+
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      return;
+    }
+  }
+
+  Future<void> fetchMoreReports() async {
+    limitNumber += 8;
+    final limit = 'limitToFirst=$limitNumber';
+    final filterString = 'orderBy="status"&$limit&startAt="$startNumer"';
     var url = Uri.parse(
         'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
 
@@ -114,18 +174,17 @@ class Reports with ChangeNotifier {
                 longitude: report['location']['longitude'],
                 address: report['location']['address'])));
       });
+
+      startNumer += 9;
+
       _items = loadedReports;
-      _copyItems = loadedReports;
+      _copyItems.addAll(loadedReports);
 
       notifyListeners();
     } catch (error) {
       print(error);
       return;
     }
-  }
-
-  List<Report> get copyOfReports {
-    return [..._copyItems];
   }
 
   void filterReports(String value) {
@@ -158,24 +217,11 @@ class Reports with ChangeNotifier {
     try {
       await http.post(url,
           body: json.encode({'content': comment, 'userId': userId}));
-      // final reportIndex1 = _items.indexWhere((report) => report.id == reportId);
-      // final reportIndex2 =
-      //     _copyItems.indexWhere((report) => report.id == reportId);
-
-      // _items
-      //     .elementAt(reportIndex1)
-      //     .comments
-      //     .add(Comment(comment: comment, userId: userId));
 
       _items[_items.indexWhere((report) => report.id == reportId)]
           .comments
           .add(Comment(comment: comment, userId: userId));
 
-      // print(_items.elementAt(reportIndex1).comments.first.comment);
-      // _copyItems[reportIndex2]
-      //     .comments
-      //     .add(Comment(comment: comment, userId: userId));
-      // notifyListeners();
       notifyListeners();
     } catch (error) {
       print(error);

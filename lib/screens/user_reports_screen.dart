@@ -27,7 +27,8 @@ class UserReportsScreen extends StatelessWidget {
         child: Text(
           'Zgłoszenia użytkownika',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
         ),
       ),
       Expanded(

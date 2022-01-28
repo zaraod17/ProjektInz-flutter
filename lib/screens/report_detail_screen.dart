@@ -44,6 +44,29 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         height: 250, width: double.infinity, fit: BoxFit.cover);
   }
 
+  Widget _messageBuilder(ReportStatus status) {
+    switch (status) {
+      case ReportStatus.Open:
+        {
+          return Center(
+            child: Text('Zgłoszenie czeka na rozpatrzenie'),
+          );
+        }
+      case ReportStatus.Closed:
+        {
+          return Center(
+            child: Text('Zgłoszenie zamknięte'),
+          );
+        }
+      case ReportStatus.InProgress:
+        {
+          return Center(
+            child: Text('Zgłoszenie jest rozpatrywane'),
+          );
+        }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // final reportData = ModalRoute.of(context).settings.arguments as Report;
@@ -61,7 +84,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
           child: Column(
             children: [
               Container(
-                child: report.image.isNotEmpty
+                child: report.image != null
                     ? _decodeImageString(report.image)
                     : Text('Nie znaleziono zdjęcia'),
               ),
@@ -115,7 +138,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       child: Text('Uwagi',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600)),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white)),
                     ),
                     reportsProvider.userId == report.creatorId
                         ? Consumer<Reports>(
@@ -143,47 +168,47 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                           )
                         : Padding(
                             padding: EdgeInsets.all(8),
-                            child: Center(
-                              child: Text('Nie znaleziono uwag'),
-                            ),
+                            child: _messageBuilder(report.status),
                           ),
-                    TextField(
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      maxLength: 500,
-                      controller: _commentController,
-                      decoration: InputDecoration(
-                        label: Text('Uwagi dla admina'),
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        RaisedButton(
-                          color: Colors.green,
-                          onPressed: () {
-                            reportsProvider.addComment(
-                              report.id,
-                              _commentController.text,
-                            );
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Wysłano wiadomość')));
-                            setState(() {
-                              _commentController.text = '';
-                            });
-                          },
-                          child: Container(
-                              alignment: Alignment.center,
-                              width: 80,
-                              child: Text('Dodaj')),
+                    if (reportsProvider.userId == report.creatorId)
+                      TextField(
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        maxLength: 500,
+                        controller: _commentController,
+                        decoration: InputDecoration(
+                          label: Text('Uwagi dla admina'),
+                          border: OutlineInputBorder(),
                         ),
-                        SizedBox(
-                          width: 10,
-                        )
-                      ],
-                    ),
+                      ),
+                    if (reportsProvider.userId == report.creatorId)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          RaisedButton(
+                            color: Colors.green,
+                            onPressed: () {
+                              reportsProvider.addComment(
+                                report.id,
+                                _commentController.text,
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Wysłano wiadomość')));
+                              setState(() {
+                                _commentController.text = '';
+                              });
+                            },
+                            child: Container(
+                                alignment: Alignment.center,
+                                width: 80,
+                                child: Text('Dodaj')),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          )
+                        ],
+                      ),
                   ],
                 ),
               )
