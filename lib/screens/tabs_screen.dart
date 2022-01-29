@@ -4,6 +4,7 @@ import 'package:projekt/providers/reports.dart';
 import 'package:projekt/screens/add_report_screen.dart';
 
 import 'package:projekt/screens/reports_list_screen.dart';
+import 'package:projekt/screens/reports_on_map_screen.dart';
 import 'package:projekt/screens/user_reports_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,7 @@ class _TabsScreenState extends State<TabsScreen> {
   void initState() {
     _pages = [
       {'page': ReportsOverviewScreen(), 'title': Text('Wszystkie zgłoszenia')},
+      {'page': ReportsOnMapScreen(), 'title': Text('Zgłoszenia na mapie')},
       {'page': UserReportsScreen(), 'title': Text('Moje zgłoszenia')}
     ];
     super.initState();
@@ -84,6 +86,10 @@ class _TabsScreenState extends State<TabsScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Wszystkie',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map_rounded),
+            label: 'Mapa',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.supervised_user_circle),

@@ -55,7 +55,7 @@ class _ReportsOverviewScreenState extends State<ReportsOverviewScreen> {
                                   child: ReportItem()),
                               Divider()
                             ]),
-                      itemCount: reportsData.items.length + 1,
+                      itemCount: reportsData.items.reversed.length + 1,
                     ),
                   ),
                 ),
