@@ -131,21 +131,24 @@ class Reports with ChangeNotifier {
   }
 
   Future<void> fetchMoreReports() async {
-    limitNumber += 8;
     final limit = 'limitToFirst=$limitNumber';
-    final filterString = 'orderBy="status"&$limit&startAt="$startNumer"';
+    final lastReport = _items.last.id;
+    final filterString = 'orderBy="\$key"&$limit&startAt="$lastReport"';
     var url = Uri.parse(
         'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
 
     try {
       final response = await http.get(url);
+
       // print(authToken);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
       }
-      final List<Report> loadedReports = [];
-      // print(extractedData);
+
+      if (extractedData.length < 2) {
+        return;
+      }
 
       extractedData.forEach((prodId, report) {
         final List<Comment> commentsList = [];
@@ -159,7 +162,7 @@ class Reports with ChangeNotifier {
               })
             : null;
 
-        loadedReports.add(Report(
+        _items.add(Report(
             id: prodId,
             title: report['title'],
             description: report['description'],
@@ -175,10 +178,7 @@ class Reports with ChangeNotifier {
                 address: report['location']['address'])));
       });
 
-      startNumer += 9;
-
-      _items = loadedReports;
-      _copyItems.addAll(loadedReports);
+      _items = _items.toSet().toList();
 
       notifyListeners();
     } catch (error) {

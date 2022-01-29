@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:projekt/providers/auth.dart';
 import 'package:projekt/providers/reports.dart';
 import 'package:projekt/screens/add_report_screen.dart';
-import 'package:projekt/screens/auth_screen.dart';
 
 import 'package:projekt/screens/reports_list_screen.dart';
 import 'package:projekt/screens/user_reports_screen.dart';
