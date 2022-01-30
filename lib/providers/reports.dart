@@ -47,6 +47,7 @@ class Reports with ChangeNotifier {
             'category': pickedCategory,
             'description': pickedDescription,
             'image': pickedImage,
+            'dateTime': DateTime.now().toIso8601String(),
             'creatorId': userId,
             'location': {
               'latitude': updatedLocation.latitude,
@@ -76,11 +77,12 @@ class Reports with ChangeNotifier {
   }
 
   Future<void> fetchAndSetAllReports([bool filterByUser = false]) async {
-    var number = 8;
-    final limit = 'limitToFirst=$number';
+    var number = 30;
+    // var now = DateTime.now().toIso8601String();
+    final limit = 'limitToLast=$number';
     final filterString = filterByUser
         ? 'orderBy="creatorId"&equalTo="$userId"'
-        : 'orderBy="status"&$limit';
+        : 'orderBy="\$key"&$limit';
     var url = Uri.parse(
         'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
 
@@ -106,22 +108,23 @@ class Reports with ChangeNotifier {
             : null;
 
         loadedReports.add(Report(
-            id: prodId,
-            title: report['title'],
-            description: report['description'],
-            category: report['category'],
-            image: report['image'],
-            creatorId: report['creatorId'],
-            status: ReportStatus.values.firstWhere((status) =>
-                status.toString() == 'ReportStatus.' + report['status']),
-            comments: commentsList,
-            location: PlaceLocation(
-                latitude: report['location']['latitude'],
-                longitude: report['location']['longitude'],
-                address: report['location']['address'])));
+          id: prodId,
+          title: report['title'],
+          description: report['description'],
+          category: report['category'],
+          image: report['image'],
+          creatorId: report['creatorId'],
+          status: ReportStatus.values.firstWhere((status) =>
+              status.toString() == 'ReportStatus.' + report['status']),
+          comments: commentsList,
+          location: PlaceLocation(
+              latitude: report['location']['latitude'],
+              longitude: report['location']['longitude'],
+              address: report['location']['address']),
+        ));
       });
-      _items = loadedReports;
-      _copyItems = loadedReports;
+      _items = loadedReports.reversed.toList();
+      _copyItems = loadedReports.reversed.toList();
 
       notifyListeners();
     } catch (error) {
@@ -130,62 +133,64 @@ class Reports with ChangeNotifier {
     }
   }
 
-  Future<void> fetchMoreReports() async {
-    final limit = 'limitToFirst=$limitNumber';
-    final lastReport = _items.last.id;
-    final filterString = 'orderBy="\$key"&$limit&startAt="$lastReport"';
-    var url = Uri.parse(
-        'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
+  // Future<void> fetchMoreReports() async {
+  //   final limit = 'limitToFirst=$limitNumber';
+  //   final lastReport = _items.last.id;
+  //   var now = DateTime.now().toIso8601String();
+  //   final filterString =
+  //       'orderBy="dateTime"&$limit&startAt="$lastReport"&equalTo="$now"';
+  //   var url = Uri.parse(
+  //       'https://projektinz-fb3fd-default-rtdb.europe-west1.firebasedatabase.app/reports.json?auth=$authToken&$filterString');
 
-    try {
-      final response = await http.get(url);
+  //   try {
+  //     final response = await http.get(url);
 
-      // print(authToken);
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if (extractedData == null) {
-        return;
-      }
+  //     // print(authToken);
+  //     final extractedData = json.decode(response.body) as Map<String, dynamic>;
+  //     if (extractedData == null) {
+  //       return;
+  //     }
 
-      if (extractedData.length < 2) {
-        return;
-      }
+  //     if (extractedData.length < 2) {
+  //       return;
+  //     }
 
-      extractedData.forEach((prodId, report) {
-        final List<Comment> commentsList = [];
+  //     extractedData.forEach((prodId, report) {
+  //       final List<Comment> commentsList = [];
 
-        var commentsMap = report['comments'] as Map<String, dynamic>;
+  //       var commentsMap = report['comments'] as Map<String, dynamic>;
 
-        commentsMap != null
-            ? commentsMap.forEach((commentId, comment) {
-                commentsList.add(Comment(
-                    comment: comment['content'], userId: comment['userId']));
-              })
-            : null;
+  //       commentsMap != null
+  //           ? commentsMap.forEach((commentId, comment) {
+  //               commentsList.add(Comment(
+  //                   comment: comment['content'], userId: comment['userId']));
+  //             })
+  //           : null;
 
-        _items.add(Report(
-            id: prodId,
-            title: report['title'],
-            description: report['description'],
-            category: report['category'],
-            image: report['image'],
-            creatorId: report['creatorId'],
-            status: ReportStatus.values.firstWhere((status) =>
-                status.toString() == 'ReportStatus.' + report['status']),
-            comments: commentsList,
-            location: PlaceLocation(
-                latitude: report['location']['latitude'],
-                longitude: report['location']['longitude'],
-                address: report['location']['address'])));
-      });
+  //       _items.add(Report(
+  //           id: prodId,
+  //           title: report['title'],
+  //           description: report['description'],
+  //           category: report['category'],
+  //           image: report['image'],
+  //           creatorId: report['creatorId'],
+  //           status: ReportStatus.values.firstWhere((status) =>
+  //               status.toString() == 'ReportStatus.' + report['status']),
+  //           comments: commentsList,
+  //           location: PlaceLocation(
+  //               latitude: report['location']['latitude'],
+  //               longitude: report['location']['longitude'],
+  //               address: report['location']['address'])));
+  //     });
 
-      _items = _items.toSet().toList();
+  //     _items = _items.toSet().toList();
 
-      notifyListeners();
-    } catch (error) {
-      print(error);
-      return;
-    }
-  }
+  //     notifyListeners();
+  //   } catch (error) {
+  //     print(error);
+  //     return;
+  //   }
+  // }
 
   void filterReports(String value) {
     final reports = copyOfReports;
