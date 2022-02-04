@@ -49,7 +49,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
           'Zanieczyszczenia',
           'Oświetlenie',
           'Drogi',
-          'Roślinność'
+          'Roślinność',
+          'Pomysł'
         ].map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
