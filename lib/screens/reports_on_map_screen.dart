@@ -36,10 +36,11 @@ class _ReportsOnMapScreenState extends State<ReportsOnMapScreen> {
                       position: LatLng(
                           report.location.latitude, report.location.longitude),
                       infoWindow: InfoWindow(
-                          title: report.title, snippet: report.category),
-                      onTap: () => Navigator.of(context).pushNamed(
-                          ReportDetailScreen.routeName,
-                          arguments: report),
+                          title: report.title,
+                          snippet: report.category,
+                          onTap: () => Navigator.of(context).pushNamed(
+                              ReportDetailScreen.routeName,
+                              arguments: report)),
                     ))
                 .toSet()),
       ),

@@ -68,7 +68,6 @@ class Reports with ChangeNotifier {
           status: ReportStatus.Open);
 
       _items.add(newReport);
-      // _copyItems.add(newReport);
     } catch (error) {
       throw error;
     }
