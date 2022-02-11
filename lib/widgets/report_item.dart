@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:projekt/providers/reports.dart';
-import 'package:projekt/screens/report_detail_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 
+import 'package:projekt/screens/report_detail_screen.dart';
 import '../models/report.dart';
 import '../screens/report_detail_screen.dart';
 
@@ -40,23 +40,22 @@ class _ReportItemState extends State<ReportItem> {
   @override
   Widget build(BuildContext context) {
     final report = Provider.of<Report>(context);
-    return Column(
-      children: [
-        ListTile(
-          leading: report.image != null
-              ? CircleAvatar(backgroundImage: _decodeImageString(report.image))
-              : null,
-          title: Text(report.title),
-          subtitle: report.location.address != null
-              ? Text(report.location.address)
-              : null,
-          trailing: _iconBuilder(report.status),
-          onTap: () {
-            Navigator.of(context)
-                .pushNamed(ReportDetailScreen.routeName, arguments: report);
-          },
-        )
-      ],
+    var newFormat = DateFormat("yy-MM-dd H:m");
+    return Expanded(
+      child: ListTile(
+        leading: report.image != null
+            ? CircleAvatar(backgroundImage: _decodeImageString(report.image))
+            : null,
+        title: Text(report.title),
+        subtitle: report.creationDate != null
+            ? Text('Stworzono: ${newFormat.format(report.creationDate)}')
+            : null,
+        trailing: _iconBuilder(report.status),
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(ReportDetailScreen.routeName, arguments: report);
+        },
+      ),
     );
   }
 }

@@ -115,6 +115,7 @@ class Reports with ChangeNotifier {
           creatorId: report['creatorId'],
           status: ReportStatus.values.firstWhere((status) =>
               status.toString() == 'ReportStatus.' + report['status']),
+          creationDate: DateTime.parse(report['dateTime']),
           comments: commentsList,
           location: PlaceLocation(
               latitude: report['location']['latitude'],

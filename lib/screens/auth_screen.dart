@@ -118,15 +118,15 @@ class _AuthCardState extends State<AuthCard> {
     } on HttpException catch (error) {
       var errorMeassage = 'Authentication failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
-        errorMeassage = 'This email already exists';
+        errorMeassage = 'Email zajęty, wpisz inny';
       } else if (error.toString().contains('INVALID_EMAIL')) {
-        errorMeassage = 'This email is invaild';
+        errorMeassage = 'Niepoprawny adres email';
       } else if (error.toString().contains('WEAK_PASSWORD')) {
-        errorMeassage = 'This password is too weak';
+        errorMeassage = 'Hasło jest za słabe';
       } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
-        errorMeassage = 'Could not find a user with that e-mail';
+        errorMeassage = 'Nie znaleziono użytkownika z podanym adresem';
       } else if (error.toString().contains('INVALID_PASSWORD')) {
-        errorMeassage = 'Invalid password';
+        errorMeassage = 'Nieprawidłowe hasło';
       }
       _showErrorDialog(errorMeassage);
     } catch (error) {
@@ -184,7 +184,7 @@ class _AuthCardState extends State<AuthCard> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value.isEmpty || !value.contains('@')) {
-                      return 'Invalid email!';
+                      return 'Niepoprawny email!';
                     }
                     return null;
                     //  return null;
@@ -195,12 +195,12 @@ class _AuthCardState extends State<AuthCard> {
                 ),
                 if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(labelText: 'Hasło'),
                     obscureText: true,
                     controller: _passwordController,
                     validator: (value) {
                       if (value.isEmpty || value.length < 5) {
-                        return 'Password is too short!';
+                        return 'Hasło jest za krótkie!';
                       }
                     },
                     onSaved: (value) {
@@ -210,12 +210,12 @@ class _AuthCardState extends State<AuthCard> {
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
                     enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
+                    decoration: InputDecoration(labelText: 'Powtórz hasło'),
                     obscureText: true,
                     validator: _authMode == AuthMode.Signup
                         ? (value) {
                             if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
+                              return 'Hasła nie są takie same!';
                             }
                           }
                         : null,
@@ -257,8 +257,9 @@ class _AuthCardState extends State<AuthCard> {
                   )
                 else
                   RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                    child: Text(_authMode == AuthMode.Login
+                        ? 'ZALOGUJ'
+                        : 'ZAREJESTRUJ SIĘ'),
                     onPressed: _submit,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -272,7 +273,7 @@ class _AuthCardState extends State<AuthCard> {
                   child: _authMode == AuthMode.PasswordReset
                       ? Text('Wróć')
                       : Text(
-                          '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                          '${_authMode == AuthMode.Login ? 'REJESTRACJA' : 'LOGOWANIE'} '),
                   onPressed: _switchAuthMode,
                   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

@@ -27,6 +27,7 @@ class Report with ChangeNotifier {
   final String description;
   final String image;
   final String creatorId;
+  final DateTime creationDate;
   final List<Comment> comments;
   final PlaceLocation location;
   final ReportStatus status;
@@ -39,6 +40,7 @@ class Report with ChangeNotifier {
       this.comments,
       this.description,
       this.creatorId,
+      this.creationDate,
       this.image,
       this.status});
 }

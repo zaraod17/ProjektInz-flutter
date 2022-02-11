@@ -67,6 +67,29 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     }
   }
 
+  Widget _statusMessageBuilder(ReportStatus status) {
+    switch (status) {
+      case ReportStatus.Open:
+        {
+          return Center(
+            child: Text('Status zgłoszenia: Otwarte'),
+          );
+        }
+      case ReportStatus.Closed:
+        {
+          return Center(
+            child: Text('Status zgłoszenia: Zamknięte'),
+          );
+        }
+      case ReportStatus.InProgress:
+        {
+          return Center(
+            child: Text('Status zgłoszenia: Rozpatrywane'),
+          );
+        }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // final reportData = ModalRoute.of(context).settings.arguments as Report;
@@ -104,6 +127,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     border: Border.all(width: 1, color: Colors.grey),
                   )),
               SizedBox(height: 15),
+              _statusMessageBuilder(report.status),
+              SizedBox(
+                height: 15,
+              ),
               Text('Lokalizacja',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
