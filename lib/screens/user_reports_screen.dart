@@ -40,6 +40,7 @@ class UserReportsScreen extends StatelessWidget {
               : RefreshIndicator(
                   child: Consumer<Reports>(
                     builder: (context, reportsData, child) => ListView.builder(
+                      itemExtent: 80,
                       itemBuilder: (ctx, i) => Column(children: [
                         ChangeNotifierProvider.value(
                             value: reportsData.items[i], child: ReportItem()),
